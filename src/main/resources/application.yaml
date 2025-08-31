@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: suspicious-activity-tracker
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/suspiciousdb}
+    username: ${DB_USER:user}
+    password: ${DB_PASSWORD:password}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
