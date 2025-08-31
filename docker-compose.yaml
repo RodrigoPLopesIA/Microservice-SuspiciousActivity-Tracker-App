@@ -1,8 +1,31 @@
 version: '3.9'
 
 services:
+  suspicious-activity-tracker:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: suspicious-activity-tracker
+    ports:
+      - "${APP_PORT}:8080"
+    volumes:
+      - ./src:/app/src
+      - ~/.m2:/root/.m2
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:${DB_PORT}/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:${KAFKA_INTERNAL_PORT}
+      SPRING_APPLICATION_NAME: suspicious-activity-tracker
+    depends_on:
+      - kafka
+      - database
+    networks:
+      - kafka_network
+
   database:
     image: postgres:15
+    container_name: suspicious-activity-db
     ports:
       - "${DB_PORT}:5432"
     environment:
@@ -11,7 +34,11 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - db_data:/var/lib/postgresql/data
+    networks:
+      - kafka_network
+
   zookeeper:
+    container_name: zookeeper
     image: confluentinc/cp-zookeeper:7.5.0
     networks:
       - kafka_network
@@ -19,7 +46,9 @@ services:
       - "${ZOOKEEPER_PORT}:2181"
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
+
   kafka:
+    container_name: kafka
     image: confluentinc/cp-kafka:7.5.0
     networks:
       - kafka_network
@@ -32,11 +61,13 @@ services:
       KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:${KAFKA_PORT},PLAINTEXT_INTERNAL://0.0.0.0:${KAFKA_INTERNAL_PORT}
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:${KAFKA_PORT},PLAINTEXT_INTERNAL://kafka:${KAFKA_INTERNAL_PORT}
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
-      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT_INTERNAL
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
       - zookeeper
+
   kafdrop:
+    container_name: kafdrop
     image: obsidiandynamics/kafdrop:latest
     networks:
       - kafka_network
@@ -46,10 +77,10 @@ services:
       KAFKA_BROKERCONNECT: "kafka:${KAFKA_INTERNAL_PORT}"
     depends_on:
       - kafka
-    
+
 volumes:
   db_data:
 
 networks:
   kafka_network:
-    driver: bridge  
+    driver: bridge
