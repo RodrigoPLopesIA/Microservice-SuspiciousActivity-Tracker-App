@@ -2,6 +2,12 @@ spring:
   application:
     name: suspicious-activity-tracker
 
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/suspicious_activity_db}
     username: ${DB_USER:user}
@@ -17,3 +23,6 @@ spring:
   flyway:
     enabled: true
     baseline-on-migrate: true
+kafka:
+  topic:
+    event-tickets: event_tickets
