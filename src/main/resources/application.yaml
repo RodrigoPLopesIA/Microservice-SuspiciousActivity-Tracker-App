@@ -3,7 +3,7 @@ spring:
     name: suspicious-activity-tracker
 
   datasource:
-    url: ${DB_URL:jdbc:postgresql://localhost:5432/suspiciousdb}
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/suspicious_activity_db}
     username: ${DB_USER:user}
     password: ${DB_PASSWORD:password}
     driver-class-name: org.postgresql.Driver
@@ -12,4 +12,8 @@ spring:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
