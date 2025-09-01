@@ -3,26 +3,36 @@ package com.rodrigo.ms.suspicious_activity_tracker.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.rodrigo.ms.suspicious_activity_tracker.dto.RequestSuspiciousActivityDTO;
+import com.rodrigo.ms.suspicious_activity_tracker.dto.ResponseSuspiciousActivityDTO;
 import com.rodrigo.ms.suspicious_activity_tracker.services.ProducerService;
+import com.rodrigo.ms.suspicious_activity_tracker.services.SuspiciousActivityService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.net.URI;
+
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/suspicious-activity")
+@RequestMapping("/suspicious_activiy")
 public class SuspiciousActivityController {
     
 
-    private final ProducerService producerService;
+    private final SuspiciousActivityService suspiciousActivityService;
 
-    @GetMapping
-    public ResponseEntity<String> getMethodName() {
-        this.producerService.sendMessage("mensagem do topico");
-        return ResponseEntity.ok().body("mensagem enviada para o topico com sucesso!");
+    @PostMapping
+    public ResponseEntity<ResponseSuspiciousActivityDTO> save(@Valid @RequestBody RequestSuspiciousActivityDTO request) {
+        var saved = suspiciousActivityService.save(request);
+
+        var uri = URI.create(String.format("/suspicious-activity/%s", saved.id()));
+        
+        return ResponseEntity.created(uri).body(saved);
     }
     
 }
