@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -183,11 +184,9 @@ public class SuspiciousActivityServiceTest {
 
         // Assert & Act
         service.delete(id);
-     
 
-
-
-        Mockito.verify(producerService).sendMessage(Mockito.any(ResponseSuspiciousActivityDTO.class),
+        Mockito.verify(producerService, times(1)).sendMessage(Mockito.any(ResponseSuspiciousActivityDTO.class),
                                                     Mockito.eq(EventType.DELETED));
+        Mockito.verify(repository, times(1)).delete(Mockito.any(SuspiciousActivity.class));
     }
 }
