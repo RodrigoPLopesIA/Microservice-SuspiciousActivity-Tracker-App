@@ -2,6 +2,7 @@ package com.rodrigo.ms.suspicious_activity_tracker.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 import com.rodrigo.ms.suspicious_activity_tracker.dto.RequestSuspiciousActivityDTO;
 import com.rodrigo.ms.suspicious_activity_tracker.dto.ResponseSuspiciousActivityDTO;
@@ -19,6 +20,11 @@ public interface SuspiciousActivityMapper {
     SuspiciousActivity toEntity(RequestSuspiciousActivityDTO dto);
 
     ResponseSuspiciousActivityDTO toResponseDTO(SuspiciousActivity entity);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", ignore = true)
+    void updateEntityFromDto(RequestSuspiciousActivityDTO dto, @MappingTarget SuspiciousActivity entity);
 
     
 
