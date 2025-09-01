@@ -29,7 +29,6 @@ public class ProducerKafkaConfig {
         return TopicBuilder.name(topic)
                 .partitions(1)
                 .replicas(1)
-                .compact()
                 .build();
     }
 
