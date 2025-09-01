@@ -148,4 +148,25 @@ public class SuspiciousActivityServiceTest {
         Mockito.verify(producerService, never()).sendMessage(Mockito.any(ResponseSuspiciousActivityDTO.class),
                                                     Mockito.eq(EventType.UPDATED));
     }
+
+    @Test
+    @DisplayName("should throw a error when try to delete suspicious activity not exists")
+    public void testDeleteSuspiciousActivityEntityNotFound() {
+        // Arrange
+        var id = UUID.randomUUID();
+
+        Mockito.when(repository.findById(id)).thenReturn(Optional.empty());
+
+
+        // Assert & Act
+        assertThatThrownBy(() -> service.delete(id))
+        .isInstanceOf(EntityNotFoundException.class).hasMessage("SuspiciousActivity not found with id: " + id);
+
+
+
+        Mockito.verify(repository, never()).delete(Mockito.any(SuspiciousActivity.class));
+        Mockito.verify(mapper, never()).toResponseDTO(Mockito.any(SuspiciousActivity.class));
+        Mockito.verify(producerService, never()).sendMessage(Mockito.any(ResponseSuspiciousActivityDTO.class),
+                                                    Mockito.eq(EventType.DELETED));
+    }
 }
