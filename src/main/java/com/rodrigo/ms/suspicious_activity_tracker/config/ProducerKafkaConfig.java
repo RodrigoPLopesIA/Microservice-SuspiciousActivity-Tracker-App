@@ -14,6 +14,8 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.core.ProducerFactory;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 
+import com.rodrigo.ms.suspicious_activity_tracker.dto.MessageEventDTO;
+
 @Configuration
 public class ProducerKafkaConfig {
 
@@ -33,7 +35,7 @@ public class ProducerKafkaConfig {
     }
 
     @Bean
-    public ProducerFactory<String, Object> producerFactory() {
+    public ProducerFactory<String, MessageEventDTO> producerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, boostrapServer);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
@@ -42,7 +44,7 @@ public class ProducerKafkaConfig {
     }
     
     @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate() {
+    public KafkaTemplate<String, MessageEventDTO> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }
