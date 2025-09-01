@@ -5,6 +5,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.Mockito.never;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -22,6 +24,8 @@ import com.rodrigo.ms.suspicious_activity_tracker.mapper.SuspiciousActivityMappe
 import com.rodrigo.ms.suspicious_activity_tracker.repositories.SuspiciousActivityRepository;
 import com.rodrigo.ms.suspicious_activity_tracker.services.ProducerService;
 import com.rodrigo.ms.suspicious_activity_tracker.services.SuspiciousActivityService;
+
+import jakarta.persistence.EntityNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class SuspiciousActivityServiceTest {
@@ -120,6 +124,28 @@ public class SuspiciousActivityServiceTest {
         Mockito.verify(mapper).updateEntityFromDto(Mockito.any(RequestSuspiciousActivityDTO.class),
                                                 Mockito.any(SuspiciousActivity.class));
         Mockito.verify(producerService).sendMessage(Mockito.any(ResponseSuspiciousActivityDTO.class),
+                                                    Mockito.eq(EventType.UPDATED));
+    }
+
+    @Test
+    @DisplayName("should throw a error when try to update suspicious activity not exists")
+    public void testUpdateSuspiciousActivityEntityNotFound() {
+        // Arrange
+        var id = UUID.randomUUID();
+
+        Mockito.when(repository.findById(id)).thenReturn(Optional.empty());
+
+
+        // Assert & Act
+        assertThatThrownBy(() -> service.update(id, request))
+        .isInstanceOf(EntityNotFoundException.class).hasMessage("SuspiciousActivity not found with id: " + id);
+
+
+
+        Mockito.verify(repository, never()).save(Mockito.any(SuspiciousActivity.class));
+        Mockito.verify(mapper, never()).updateEntityFromDto(Mockito.any(RequestSuspiciousActivityDTO.class),
+                                                Mockito.any(SuspiciousActivity.class));
+        Mockito.verify(producerService, never()).sendMessage(Mockito.any(ResponseSuspiciousActivityDTO.class),
                                                     Mockito.eq(EventType.UPDATED));
     }
 }
