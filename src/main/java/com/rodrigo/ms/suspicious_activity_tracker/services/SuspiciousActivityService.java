@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import com.rodrigo.ms.suspicious_activity_tracker.dto.RequestSuspiciousActivityDTO;
 import com.rodrigo.ms.suspicious_activity_tracker.dto.ResponseSuspiciousActivityDTO;
 import com.rodrigo.ms.suspicious_activity_tracker.entities.SuspiciousActivity;
+import com.rodrigo.ms.suspicious_activity_tracker.enums.EventType;
 import com.rodrigo.ms.suspicious_activity_tracker.mapper.SuspiciousActivityMapper;
 import com.rodrigo.ms.suspicious_activity_tracker.repositories.SuspiciousActivityRepository;
 
@@ -26,9 +27,10 @@ public class SuspiciousActivityService {
         var dataToSave = dataMapper.toEntity(data);
 
         var savedData = suspiciousActivityRepository.save(dataToSave);
-
-        producerService.sendMessage(savedData);
+        var response = dataMapper.toResponseDTO(savedData);
         
-        return dataMapper.toResponseDTO(savedData);
+        producerService.sendMessage(response, EventType.CREATED);
+
+        return response;
     }
 }
