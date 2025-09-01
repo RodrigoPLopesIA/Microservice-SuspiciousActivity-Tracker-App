@@ -169,4 +169,25 @@ public class SuspiciousActivityServiceTest {
         Mockito.verify(producerService, never()).sendMessage(Mockito.any(ResponseSuspiciousActivityDTO.class),
                                                     Mockito.eq(EventType.DELETED));
     }
+
+    @Test
+    @DisplayName("should delete suspicious activity")
+    public void testDeleteSuspiciousActivityEntity() {
+        // Arrange
+        var id = UUID.randomUUID();
+
+        Mockito.when(repository.findById(id)).thenReturn(Optional.of(suspiciousActivity));
+        Mockito.doNothing().when(repository).delete(Mockito.any(SuspiciousActivity.class));
+
+        Mockito.when(mapper.toResponseDTO(suspiciousActivity)).thenReturn(response);
+
+        // Assert & Act
+        service.delete(id);
+     
+
+
+
+        Mockito.verify(producerService).sendMessage(Mockito.any(ResponseSuspiciousActivityDTO.class),
+                                                    Mockito.eq(EventType.DELETED));
+    }
 }
