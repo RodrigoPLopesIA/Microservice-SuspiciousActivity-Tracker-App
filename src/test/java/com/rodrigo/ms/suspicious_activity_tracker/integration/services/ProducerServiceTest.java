@@ -1,4 +1,4 @@
-package com.rodrigo.ms.suspicious_activity_tracker.integration;
+package com.rodrigo.ms.suspicious_activity_tracker.integration.services;
 
 import java.time.Duration;
 import java.time.Instant;
