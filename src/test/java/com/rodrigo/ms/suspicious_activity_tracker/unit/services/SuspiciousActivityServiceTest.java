@@ -1,6 +1,7 @@
 package com.rodrigo.ms.suspicious_activity_tracker.unit.services;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.assertj.core.api.Assertions.*;
@@ -96,5 +97,29 @@ public class SuspiciousActivityServiceTest {
         assertThat(result).isNotNull();
         Mockito.verify(producerService).sendMessage(Mockito.any(ResponseSuspiciousActivityDTO.class),
                                                     Mockito.eq(EventType.CREATED));
+    }
+
+    @Test
+    @DisplayName("should update a suspicious activity")
+    public void testUpdateSuspiciousActivity() {
+        // Arrange
+        var id = UUID.randomUUID();
+
+        Mockito.when(repository.findById(id)).thenReturn(Optional.of(suspiciousActivity));
+        Mockito.when(mapper.toResponseDTO(suspiciousActivity))
+            .thenReturn(response);
+        Mockito.when(repository.save(Mockito.any(SuspiciousActivity.class)))
+            .thenReturn(suspiciousActivity);
+
+        // Act
+        var result = service.update(id, request);
+
+        // Assert
+        assertThat(result).isNotNull();
+
+        Mockito.verify(mapper).updateEntityFromDto(Mockito.any(RequestSuspiciousActivityDTO.class),
+                                                Mockito.any(SuspiciousActivity.class));
+        Mockito.verify(producerService).sendMessage(Mockito.any(ResponseSuspiciousActivityDTO.class),
+                                                    Mockito.eq(EventType.UPDATED));
     }
 }
