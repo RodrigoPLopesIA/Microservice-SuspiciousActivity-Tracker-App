@@ -13,6 +13,7 @@ import com.rodrigo.ms.suspicious_activity_tracker.enums.EventType;
 import com.rodrigo.ms.suspicious_activity_tracker.mapper.SuspiciousActivityMapper;
 import com.rodrigo.ms.suspicious_activity_tracker.repositories.SuspiciousActivityRepository;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -45,13 +46,13 @@ public class SuspiciousActivityService {
 
     public ResponseSuspiciousActivityDTO findById(UUID id) {
         var entity = suspiciousActivityRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("SuspiciousActivity not found with id: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("SuspiciousActivity not found with id: " + id));
         return dataMapper.toResponseDTO(entity);
     }
 
     public ResponseSuspiciousActivityDTO update(UUID id, RequestSuspiciousActivityDTO data) {
         var existing = suspiciousActivityRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("SuspiciousActivity not found with id: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("SuspiciousActivity not found with id: " + id));
         
             dataMapper.updateEntityFromDto(data, existing);
         
@@ -65,7 +66,7 @@ public class SuspiciousActivityService {
 
     public void delete(UUID id) {
         var entity = suspiciousActivityRepository.findById(id)
-            .orElseThrow(() -> new RuntimeException("SuspiciousActivity not found with id: " + id));
+            .orElseThrow(() -> new EntityNotFoundException("SuspiciousActivity not found with id: " + id));
         suspiciousActivityRepository.delete(entity);
         var response = dataMapper.toResponseDTO(entity);
         producerService.sendMessage(response, EventType.DELETED);
