@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/suspicious_activiy")
+@RequestMapping("/suspicious_activity")
 public class SuspiciousActivityController {
     
 
