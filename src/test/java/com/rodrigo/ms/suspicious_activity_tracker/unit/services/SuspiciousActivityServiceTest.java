@@ -1,6 +1,7 @@
 package com.rodrigo.ms.suspicious_activity_tracker.unit.services;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,6 +17,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import com.rodrigo.ms.suspicious_activity_tracker.dto.RequestSuspiciousActivityDTO;
 import com.rodrigo.ms.suspicious_activity_tracker.dto.ResponseSuspiciousActivityDTO;
@@ -83,7 +88,28 @@ public class SuspiciousActivityServiceTest {
         );
     }
 
+    @Test
+    @DisplayName("should return all suspicious activities paginated")
+    public void testFindAllSuspiciousActivitiesPaginated() {
+        // Arrange
+        Pageable pageable = PageRequest.of(0, 10);
+        List<SuspiciousActivity> suspiciousActivities = List.of(suspiciousActivity);
+        Page<SuspiciousActivity> page = new PageImpl<>(suspiciousActivities, pageable, suspiciousActivities.size());
 
+        Mockito.when(repository.findAll(pageable)).thenReturn(page);
+        Mockito.when(mapper.toResponseDTO(suspiciousActivity)).thenReturn(response);
+
+        // Act
+        Page<ResponseSuspiciousActivityDTO> result = service.findAll(pageable);
+
+        // Assert
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0)).isEqualTo(response);
+
+        Mockito.verify(repository, times(1)).findAll(pageable);
+        Mockito.verify(mapper, times(1)).toResponseDTO(suspiciousActivity);
+    }
     @Test
     @DisplayName("should return a suspicious activity by id")
     public void testGetSuspiciousActivityById(){
