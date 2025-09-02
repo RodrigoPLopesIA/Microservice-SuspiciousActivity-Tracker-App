@@ -85,6 +85,24 @@ public class SuspiciousActivityServiceTest {
 
 
     @Test
+
+    @DisplayName("should return a suspicious activity by id")
+    public void testGetSuspiciousActivityById(){
+
+        var id = UUID.randomUUID();
+        Mockito.when(mapper.toResponseDTO(suspiciousActivity))
+        .thenReturn(response);
+        Mockito.when(repository.findById(Mockito.any(UUID.class))).thenReturn(Optional.of(suspiciousActivity));
+
+        var result = service.findById(id);
+
+
+        assertThat(result).isEqualTo(response);
+
+        Mockito.verify(repository, times(1)).findById(Mockito.any(UUID.class));
+
+    }
+    @Test
     @DisplayName("should create a new suspicious activity")
     public void testCreateSuspiciousActivity(){
         // Arrange
