@@ -50,21 +50,21 @@ public class SuspiciousActivityController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseSuspiciousActivityDTO> findById(@PathVariable UUID id) {
+    public ResponseEntity<ResponseSuspiciousActivityDTO> findById(@PathVariable("id") UUID id) {
         var result = suspiciousActivityService.findById(id);
         return ResponseEntity.ok(result);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ResponseSuspiciousActivityDTO> update(
-            @PathVariable UUID id,
+            @PathVariable("id") UUID id,
             @Valid @RequestBody RequestSuspiciousActivityDTO request) {
         var updated = suspiciousActivityService.update(id, request);
         return ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable UUID id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") UUID id) {
         suspiciousActivityService.delete(id);
         return ResponseEntity.noContent().build();
     }
