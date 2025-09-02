@@ -85,7 +85,6 @@ public class SuspiciousActivityServiceTest {
 
 
     @Test
-
     @DisplayName("should return a suspicious activity by id")
     public void testGetSuspiciousActivityById(){
 
@@ -100,6 +99,22 @@ public class SuspiciousActivityServiceTest {
         assertThat(result).isEqualTo(response);
 
         Mockito.verify(repository, times(1)).findById(Mockito.any(UUID.class));
+
+    }
+
+    @Test
+    @DisplayName("should throw a not found execpition when a suspicious activity not exists")
+    public void testGetSuspiciousActivityByIdNotFound(){
+
+        var id = UUID.randomUUID();
+
+        Mockito.when(repository.findById(Mockito.any(UUID.class))).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> service.findById(id)).isInstanceOf(EntityNotFoundException.class).hasMessage("SuspiciousActivity not found with id: " + id);
+
+
+        Mockito.verify(repository, times(1)).findById(Mockito.any(UUID.class));
+        Mockito.verify(mapper, never()).toResponseDTO(Mockito.any(SuspiciousActivity.class));
 
     }
     @Test
